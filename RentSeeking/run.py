@@ -1,8 +1,11 @@
 # -*- coding:utf-8 -*-
 
-import os
-import sys
-from scrapy.cmdline import execute
+import scrapy
+from scrapy.crawler import CrawlerProcess
+from .spiders.anjuke import AnjukeSpider
+from .spiders.lianjia import LianjiaSpider
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-execute('scrapy crawl all'.split())
+process = CrawlerProcess()
+process.crawl(AnjukeSpider)
+process.crawl(LianjiaSpider)
+process.start()

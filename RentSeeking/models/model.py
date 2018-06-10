@@ -19,10 +19,11 @@ class ApmBaseInfo(Base):
     built_year = Column(String(255), nullable=True)
     price = Column(Integer, nullable=False)
     subway = Column(String(255), nullable=False)
+    spider = Column(String(255), nullable=False)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=False)
 
-    def __init__(self, apm_name, apm_url, cell_name, cell_type, area, built_year, price, subway, created_at,
+    def __init__(self, apm_name, apm_url, cell_name, cell_type, area, built_year, price, subway, website, created_at,
                  updated_at):
         self.apm_name = apm_name
         self.apm_url = apm_url
@@ -32,6 +33,7 @@ class ApmBaseInfo(Base):
         self.built_year = built_year
         self.price = price
         self.subway = subway
+        self.spider = website
         self.created_at = created_at
         self.updated_at = updated_at
 
@@ -52,12 +54,13 @@ class ApmDetailInfo(Base):
     contact = Column(String(255), nullable=False)
     contact_identity = Column(String(255), nullable=True)
     phone = Column(String(255), nullable=False)
+    spider = Column(String(255), nullable=False)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=False)
 
     def __init__(self, apm_name, price, area, floor, apm_detail_url,
-                 traffication, location, cell_type, orientation,contact,
-                 contact_identity, phone, created_at, updated_at):
+                 traffication, location, cell_type, orientation, contact,
+                 contact_identity, phone, website, created_at, updated_at):
         self.apm_name = apm_name
         self.price = price
         self.area = area
@@ -70,5 +73,6 @@ class ApmDetailInfo(Base):
         self.contact = contact
         self.contact_identity = contact_identity
         self.phone = phone
+        self.spider = website
         self.created_at = created_at
         self.updated_at = updated_at
