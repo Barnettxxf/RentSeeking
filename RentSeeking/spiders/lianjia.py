@@ -29,7 +29,12 @@ class LianjiaSpider(scrapy.Spider):
         subway = response.meta.get('subway')
 
         # 判断有没有下一页
-        total_page = re.search('"totalPage":(\d+)', response.text).group(1)
+        total_page = re.search('"totalPage":(\d+)', response.text)
+        if total_page:
+            total_page = total_page.group(1)
+        else:
+            return
+
         current_page = re.search('"curPage":(\d+)', response.text).group(1)
         if 'pg%s' % current_page not in response.url:
             url = urljoin(response.url, 'pg%s' % current_page)
@@ -39,7 +44,7 @@ class LianjiaSpider(scrapy.Spider):
             url = response.url.replace('pg%s' % current_page, 'pg%d' % (int(current_page) + 1))
         else:
             url = url.replace('pg%s' % current_page, 'pg%d' % (int(current_page) + 1))
-        if int(current_page) > int(total_page):
+        if int(current_page) <= int(total_page):
             yield scrapy.Request(url=url, callback=self.parse_base_info, meta={'subway': subway}, headers=self.headers)
 
         # 获取数据

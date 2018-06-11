@@ -15,10 +15,12 @@ class Record(Base):
     base_info_count = Column(Integer, nullable=False)
     detail_info_count = Column(Integer, nullable=False)
     spider = Column(String(255), nullable=False)
+    cost_time = Column(String(255), nullable=False)
     created_at = Column(DateTime, nullable=False)
 
-    def __init__(self, base_info_count, detail_info_count, spider):
+    def __init__(self, base_info_count, detail_info_count, spider, cost_time):
         self.base_info_count = base_info_count
         self.detail_info_count = detail_info_count
         self.spider = spider
+        self.cost_time = cost_time
         self.created_at = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 from scrapy.exceptions import DropItem
 
 from .items import ApmBaseInfoItem, AmpDetailInfoItem
@@ -16,7 +17,11 @@ class RentseekingPipeline(object):
             else:
                 item[i] = ''
         item['area'] = item['area'].replace('平米', '')
-
+        item['area'] = item['area'].replace('㎡', '')
+        if '-' in item['price']:
+            low = int(item['price'].split('-')[0])
+            high = int(item['price'].split('-')[1])
+            item['price'] = str(int((low + high) / 2))
         if len(item['price']) == 0:
             raise DropItem
         return item
@@ -25,6 +30,9 @@ class RentseekingPipeline(object):
 class MysqlPipline(object):
     base_info_count = 0
     detail_info_count = 0
+
+    def __init__(self):
+        self.cost_time = 0
 
     def process_item(self, item, spider):
 
@@ -88,10 +96,12 @@ class MysqlPipline(object):
         r = Record(
             base_info_count=self.base_info_count,
             detail_info_count=self.detail_info_count,
-            spider=spider.name
+            spider=spider.name,
+            cost_time=(time.time()-self.cost_time)
         )
         session = load_session()
         session.merge(r)
         session.commit()
-        session.remove()
 
+    def open_spider(self, spider):
+        self.cost_time = time.time()
