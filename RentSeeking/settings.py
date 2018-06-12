@@ -19,7 +19,7 @@ ROBOTSTXT_OBEY = False
 
 CONCURRENT_REQUESTS = 32
 
-# DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 2
 CONCURRENT_REQUESTS_PER_DOMAIN = 16
 CONCURRENT_REQUESTS_PER_IP = 16
 
@@ -31,7 +31,7 @@ DEFAULT_REQUEST_HEADERS = {
 }
 
 # Disable cookies (enabled by default)
-# COOKIES_ENABLED = False
+COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 # TELNETCONSOLE_ENABLED = False
@@ -49,8 +49,8 @@ DEFAULT_REQUEST_HEADERS = {
 # }
 
 DOWNLOADER_MIDDLEWARES = {
-    # 'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
-    # 'RentSeeking.middlewares.RotateUserAgentMiddleware': 400,
+    'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
+    'RentSeeking.middlewares.RotateUserAgentMiddleware': 400,
     # 'RentSeeking.middlewares.SeleniumMiddleware': 544,
 }
 
@@ -59,8 +59,8 @@ ITEM_PIPELINES = {
     'RentSeeking.pipelines.MysqlPipline': 301,
 }
 
-AUTOTHROTTLE_ENABLED = True
-AUTOTHROTTLE_START_DELAY = 5
-AUTOTHROTTLE_MAX_DELAY = 60
-AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
-AUTOTHROTTLE_DEBUG = False
+# AUTOTHROTTLE_ENABLED = True
+# AUTOTHROTTLE_START_DELAY = 3
+# AUTOTHROTTLE_MAX_DELAY = 60
+# AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
+# AUTOTHROTTLE_DEBUG = False

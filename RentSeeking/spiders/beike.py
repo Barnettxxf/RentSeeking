@@ -103,4 +103,4 @@ class BeikeSpider(scrapy.Spider):
         item['created_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         item['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        return item
+        yield item
