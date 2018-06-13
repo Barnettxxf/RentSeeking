@@ -27,49 +27,51 @@ class LianjiaSpider(scrapy.Spider):
 
     def parse_base_info(self, response):
         subway = response.meta.get('subway')
-
+        total_page = response.meta.get('total_page')
+        current_page = re.search('"curPage":(\d+)', response.text).group(1)
         # 判断有没有下一页
-        total_page = re.search('"totalPage":(\d+)', response.text)
-        if total_page:
-            total_page = total_page.group(1)
+        if total_page is None:
+            total_page = re.search('"totalPage":(\d+)', response.text).group(1)
 
-            current_page = re.search('"curPage":(\d+)', response.text).group(1)
-            if 'pg%s' % current_page not in response.url:
-                url = urljoin(response.url, 'pg%s' % current_page)
-            else:
-                url = None
-            if url is None:
-                url = response.url.replace('pg%s' % current_page, 'pg%d' % (int(current_page) + 1))
-            else:
-                url = url.replace('pg%s' % current_page, 'pg%d' % (int(current_page) + 1))
+        next_page = int(current_page) + 1
+        if 'pg%s' % current_page not in response.url:
+            url = urljoin(response.url, 'pg%s' % current_page)
+        else:
+            url = None
 
-            if int(current_page) <= int(total_page):
-                yield scrapy.Request(url=url, callback=self.parse_base_info, meta={'subway': subway}, headers=self.headers)
+        if url is None:
+            url = response.url.replace('pg%s' % current_page, 'pg%d' % next_page)
+        else:
+            url = url.replace('pg%s' % current_page, 'pg%d' % next_page)
 
-            # 获取数据
-            data_list = response.xpath('//*[@id="house-lst"]/li')
-            for data in data_list:
-                item = ApmBaseInfoItem()
-                item['apm_name'] = data.xpath('./div[2]/h2/a/text()').extract_first()
-                item['apm_url'] = data.xpath('./div[2]/h2/a/@href').extract_first()
-                item['cell_name'] = data.xpath('./div[2]/div[1]/div[1]/a/span/text()').extract_first()
-                item['cell_type'] = data.xpath('./div[2]/div[1]/div[1]/span[1]/span/text()').extract_first()
-                item['area'] = data.xpath('./div[2]/div[1]/div[1]/span[2]/text()').extract_first().strip()
-                item['built_year'] = data.xpath('./div[2]/div[1]/div[2]/div/text()[2]').extract_first()
-                item['price'] = data.xpath('./div[2]/div[2]/div[1]/span/text()').extract_first()
-                item['subway'] = subway
-                item['created_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                item['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                # 解析租房具体信息
-                meta = {
-                    'apm_name': item['apm_name'],
-                    'price': item['price'],
-                    'cell_type': item['cell_type'],
-                    'area': item['area'],
-                }
-                yield scrapy.Request(url=item['apm_url'], meta=meta, callback=self.parse_detail_info, headers=self.headers)
-                # 返回数据
-                yield item
+        if int(current_page) < int(total_page):
+            yield scrapy.Request(url=url, callback=self.parse_base_info,
+                                 meta={'subway': subway, 'total_page': total_page}, headers=self.headers)
+
+        # 获取数据
+        data_list = response.xpath('//*[@id="house-lst"]/li')
+        for data in data_list:
+            item = ApmBaseInfoItem()
+            item['apm_name'] = data.xpath('./div[2]/h2/a/text()').extract_first()
+            item['apm_url'] = data.xpath('./div[2]/h2/a/@href').extract_first()
+            item['cell_name'] = data.xpath('./div[2]/div[1]/div[1]/a/span/text()').extract_first()
+            item['cell_type'] = data.xpath('./div[2]/div[1]/div[1]/span[1]/span/text()').extract_first()
+            item['area'] = data.xpath('./div[2]/div[1]/div[1]/span[2]/text()').extract_first().strip()
+            item['built_year'] = data.xpath('./div[2]/div[1]/div[2]/div/text()[2]').extract_first()
+            item['price'] = data.xpath('./div[2]/div[2]/div[1]/span/text()').extract_first()
+            item['subway'] = subway
+            item['created_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            item['updated_at'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            # 解析租房具体信息
+            meta = {
+                'apm_name': item['apm_name'],
+                'price': item['price'],
+                'cell_type': item['cell_type'],
+                'area': item['area'],
+            }
+            yield scrapy.Request(url=item['apm_url'], meta=meta, callback=self.parse_detail_info, headers=self.headers)
+            # 返回数据
+            yield item
 
     def parse_detail_info(self, response):
         apm_name = response.meta.get('apm_name')

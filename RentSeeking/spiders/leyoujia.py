@@ -30,15 +30,11 @@ class LeyoujiaSpider(scrapy.Spider):
         # 判断有没有下一页
         next_page_urls = response.xpath('/html/body/div[3]/div[3]/div[1]/div[3]/div/div/a/@href').extract()
         next_page_texts = response.xpath('/html/body/div[3]/div[3]/div[1]/div[3]/div/div/a/text()').extract()
-        next_page_url = ''
         for url, text in zip(next_page_urls, next_page_texts):
             if '下一页' not in text.strip():
                 next_page_url = urljoin(self.start_urls[-1], url)
-
-        if not len(next_page_url):
-            return
-
-        yield scrapy.Request(url=next_page_url, callback=self.parse_base_info, meta={'subway': subway}, headers=self.headers)
+                yield scrapy.Request(url=next_page_url, callback=self.parse_base_info,
+                                     meta={'subway': subway}, headers=self.headers)
 
         # 获取数据
         data_list = response.xpath('/html/body/div[3]/div[3]/div[1]/div[3]/ul/li')
