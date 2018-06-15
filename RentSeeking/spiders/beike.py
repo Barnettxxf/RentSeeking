@@ -16,6 +16,13 @@ class BeikeSpider(scrapy.Spider):
     headers = {
 
     }
+    custom_settings = {
+        'AUTOTHROTTLE_ENABLED': True,
+        'AUTOTHROTTLE_START_DELAY': .5,
+        'AUTOTHROTTLE_MAX_DELAY': 1.5,
+        'AUTOTHROTTLE_TARGET_CONCURRENCY': 1.0,
+        'AUTOTHROTTLE_DEBUG': True
+    }
 
     def parse(self, response):
         target_urls = response.xpath('//*[@id="filter"]/ul[3]/li/a/@href').extract()
@@ -68,7 +75,7 @@ class BeikeSpider(scrapy.Spider):
                 'subway': item['subway'],
             }
             yield scrapy.Request(url=item['apm_url'],
-                                 meta=meta, callback=self.parse_detail_info, headers=self.headers)
+                                 meta=meta, callback=self.parse_detail_info, headers=self.headers, dont_filter=True)
             # 返回数据
             yield item
 

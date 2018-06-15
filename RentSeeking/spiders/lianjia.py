@@ -16,6 +16,13 @@ class LianjiaSpider(scrapy.Spider):
         'Upgrade-Insecure-Requests': '1',
         'Accept-Language': 'zh-CN,zh;q=0.9',
     }
+    custom_settings = {
+        'AUTOTHROTTLE_ENABLED': True,
+        'AUTOTHROTTLE_START_DELAY': .5,
+        'AUTOTHROTTLE_MAX_DELAY': 1.5,
+        'AUTOTHROTTLE_TARGET_CONCURRENCY': 1.0,
+        'AUTOTHROTTLE_DEBUG': True
+    }
 
     def parse(self, response):
         target_urls = response.xpath('//*[@id="filter-options"]/dl[1]/dd/div/a/@href').extract()
@@ -69,7 +76,8 @@ class LianjiaSpider(scrapy.Spider):
                 'cell_type': item['cell_type'],
                 'area': item['area'],
             }
-            yield scrapy.Request(url=item['apm_url'], meta=meta, callback=self.parse_detail_info, headers=self.headers)
+            yield scrapy.Request(url=item['apm_url'], meta=meta, callback=self.parse_detail_info,
+                                 headers=self.headers, dont_filter=True)
             # 返回数据
             yield item
 

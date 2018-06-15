@@ -22,7 +22,11 @@ class RentseekingPipeline(object):
             low = int(item['price'].split('-')[0])
             high = int(item['price'].split('-')[1])
             item['price'] = str(int((low + high) / 2))
-        if len(item['price']) == 0:
+        if isinstance(item, ApmBaseInfoItem):
+            item['subway'] = item['subway'].split('线')[0] + '线'
+        if isinstance(item, AmpDetailInfoItem):
+            item['apm_detail_url'] = item['apm_detail_url'].split('?')[0]
+        if len(item['price']) == 1 or item['price'] == '':
             raise DropItem
         return item
 

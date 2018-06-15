@@ -62,7 +62,7 @@ class LeyoujiaSpider(scrapy.Spider):
                 'subway': subway,
             }
             yield scrapy.Request(url=item['apm_url'], meta=meta, callback=self.parse_detail_info,
-                                 headers=self.headers)
+                                 headers=self.headers, dont_filter=True)
             # 返回数据
             yield item
 

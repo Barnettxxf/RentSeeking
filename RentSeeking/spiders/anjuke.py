@@ -21,6 +21,14 @@ class AnjukeSpider(scrapy.Spider):
         'Upgrade-Insecure-Requests': '1',
     }
 
+    custom_settings = {
+        'AUTOTHROTTLE_ENABLED': True,
+        'AUTOTHROTTLE_START_DELAY': .5,
+        'AUTOTHROTTLE_MAX_DELAY': 1.5,
+        'AUTOTHROTTLE_TARGET_CONCURRENCY': 1.0,
+        'AUTOTHROTTLE_DEBUG': True
+    }
+
     def parse(self, response):
         target_urls = response.xpath('/html/body/div[5]/div[2]/div[1]/span[2]/div/a/@href').extract()
         subways = response.xpath('/html/body/div[5]/div[2]/div[1]/span[2]/div/a/text()').extract()
@@ -35,7 +43,8 @@ class AnjukeSpider(scrapy.Spider):
         # 判断有没有下一页
         next_page_url = response.xpath('/html/body/div[5]/div[3]/div[3]/div/a[7]/@href').extract_first()
         if next_page_url:
-            yield scrapy.Request(url=next_page_url, callback=self.parse_base_info, meta={'subway': subway}, headers=self.headers)
+            yield scrapy.Request(url=next_page_url, callback=self.parse_base_info, meta={'subway': subway},
+                                 headers=self.headers)
 
         # 获取数据
         data_list = response.xpath('//*[@id="list-content"]/div[position()>2]')
@@ -62,7 +71,8 @@ class AnjukeSpider(scrapy.Spider):
                 'tracffication': tracffication,
             }
             if item['apm_url']:
-                yield scrapy.Request(url=item['apm_url'], meta=meta, callback=self.parse_detail_info, headers=self.headers)
+                yield scrapy.Request(url=item['apm_url'], meta=meta, callback=self.parse_detail_info,
+                                     headers=self.headers, dont_filter=True)
 
             # 返回数据
             yield item
