@@ -13,13 +13,20 @@ class TongchengSpider(scrapy.Spider):
     name = 'tongcheng'
     allowed_domains = ['sz.58.com']
     start_urls = ['http://sz.58.com/chuzu/sub/?pagetype=ditie']
-    headers = {}
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.19 Safari/537.36',
+        'Accept-Encoding': 'gzip, deflate',
+        'Upgrade-Insecure-Requests': '1',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Language': 'zh-CN,zh;q=0.9',
+    }
     custom_settings = {
         'AUTOTHROTTLE_ENABLED': True,
         'AUTOTHROTTLE_START_DELAY': .5,
-        'AUTOTHROTTLE_MAX_DELAY': 1.5,
+        'AUTOTHROTTLE_MAX_DELAY': 5,
         'AUTOTHROTTLE_TARGET_CONCURRENCY': 1.0,
-        'AUTOTHROTTLE_DEBUG': False
+        'AUTOTHROTTLE_DEBUG': False,
+        'DOWNLOAD_DELAY': .5
     }
 
     def parse(self, response):
@@ -46,6 +53,8 @@ class TongchengSpider(scrapy.Spider):
             item = ApmBaseInfoItem()
             item['apm_name'] = data.xpath('./div[2]/h2/a/text()').extract_first()
             apm_url = data.xpath('./div[2]/h2/a/@href').extract_first()
+            if apm_url and len(apm_url.split('?')) > 2:
+                apm_url = apm_url.split('?')[1]
             item['apm_url'] = apm_url
             item['cell_name'] = data.xpath('./div[2]/p[2]/a[2]/text()').extract_first()
             item['cell_type'] = data.xpath('./div[2]/p[1]/text()').extract_first()
@@ -68,6 +77,7 @@ class TongchengSpider(scrapy.Spider):
                 'area': item['area'],
             }
             if apm_url:
+                self.headers['Referer'] = response.url
                 yield scrapy.Request(url=apm_url, meta=meta, callback=self.parse_detail_info,
                                  headers=self.headers, dont_filter=True)
             # 返回数据

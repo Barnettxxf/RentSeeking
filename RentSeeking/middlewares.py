@@ -12,6 +12,15 @@ from scrapy.http import HtmlResponse
 from selenium import webdriver
 
 
+class RentSeekingDownloaderMiddleware:
+    def process_response(self, request, response, spider):
+        if response.status == 403:
+            return request
+        if response.status == 302:
+            return request
+        return response
+
+
 class RotateUserAgentMiddleware(UserAgentMiddleware):
 
     def process_request(self, request, spider):
@@ -73,5 +82,3 @@ class SeleniumMiddleware(object):
         self.driver.get(request.url)
         text = self.driver.page_source
         return HtmlResponse(url=request.url, body=text, request=request, encoding='utf-8')
-
-

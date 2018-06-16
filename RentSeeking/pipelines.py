@@ -28,6 +28,8 @@ class RentseekingPipeline(object):
             item['apm_detail_url'] = item['apm_detail_url'].split('?')[0]
         if len(item['price']) == 1 or item['price'] == '':
             raise DropItem
+        if item['price'] == '面议':
+            item['price'] = 0
         return item
 
 
