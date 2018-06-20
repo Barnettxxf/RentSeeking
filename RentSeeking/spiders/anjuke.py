@@ -23,11 +23,11 @@ class AnjukeSpider(scrapy.Spider):
 
     custom_settings = {
         'AUTOTHROTTLE_ENABLED': True,
-        'AUTOTHROTTLE_START_DELAY': 2,
-        'AUTOTHROTTLE_MAX_DELAY': 20,
+        'AUTOTHROTTLE_START_DELAY': 0.5,
+        'AUTOTHROTTLE_MAX_DELAY': 5,
         'AUTOTHROTTLE_TARGET_CONCURRENCY': 1.0,
         'AUTOTHROTTLE_DEBUG': False,
-        'DOWNLOAD_DELAY': 2
+        'DOWNLOAD_DELAY': 1
     }
 
     def parse(self, response):
