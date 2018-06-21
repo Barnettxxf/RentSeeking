@@ -1,0 +1,1 @@
+@cd D:\MyProgramfiles\Python\RentSeeking\RentSeeking & C:\Anaconda3\python.exe D:\MyProgramfiles\Python\RentSeeking\RentSeeking\run_lianjia.py
